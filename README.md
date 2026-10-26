@@ -4,4 +4,4 @@ A learning game for ages 6 to 8: maths, logic puzzles, Hebrew (first-grade order
 
 Play it at https://mattadamcohen.github.io/study-time/
 
-Progress is saved in the browser on each device. Voice uses the device's built-in Hebrew and English voices (Chrome on Android works best), or recordings made with the 🎙 button in stories.
+Sign in with Google (☁️ button) to save progress to your family account and sync it across devices. Without signing in, progress is saved in the browser on each device. Sign-in and the database use Firebase (project study-time-d153f). Voice uses the device's built-in Hebrew and English voices (Chrome on Android works best), or recordings made with the 🎙 button in stories.

@@ -6,6 +6,9 @@
 <meta name="description" content="Creature Count: maths, Hebrew and memory games for ages 6 to 8. Hatch eggs and fill your trophy cabinet.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥚</text></svg>">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <title>Creature Count</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@500;700;800&family=Noto+Sans+Hebrew:wght@500;700;800&display=swap">
 <style>
@@ -307,6 +310,9 @@ h1{font-family:var(--display);font-weight:800;font-size:2.1rem;line-height:1;mar
 .pattern{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;font-size:clamp(1.8rem,7vw,2.4rem);line-height:1.2}
 .pattern.nums span{font-family:var(--display);font-weight:800;background:var(--bg);border-radius:12px;padding:2px 12px}
 .q-box{display:inline-grid;place-items:center;min-width:1.4em;border:3px dashed var(--berry);border-radius:12px;color:var(--berry);font-family:var(--display);font-weight:800}
+/* cloud */
+.chip.cloud{cursor:pointer;border-color:var(--sky);color:var(--sky);display:flex;gap:4px;align-items:center}
+.chip.cloud.signed{border-color:var(--leaf);color:var(--leaf)}
 /* shop */
 .shop{display:grid;gap:12px}
 .price-tag{display:flex;align-items:center;justify-content:center;gap:14px}
@@ -359,6 +365,7 @@ h1{font-family:var(--display);font-weight:800;font-size:2.1rem;line-height:1;mar
     </div>
     <div class="stats">
       <button class="chip who" id="who">Choose player</button>
+      <button class="chip cloud" id="cloud" hidden>☁️ Sign in to sync</button>
       <span class="chip" id="stat-streak">🔥 0 days</span>
       <span class="chip" id="stat-correct">⭐ 0 right</span>
       <span class="chip" id="stat-sets">🏆 0 sets done</span>
@@ -520,7 +527,9 @@ try{
 }catch(e){}
 const player=()=>DB.players.find(p=>p.id===DB.current);
 function loadPlayer(){const p=player();S=p?Object.assign(fresh(),p.game):fresh();if(p)p.game=S}
-const save=()=>{const p=player();if(p)p.game=S;try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}};
+var CLOUD={on:false,user:null,ref:null,unsub:null,timer:null,status:"",first:false};
+const writeLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}};
+const save=()=>{const p=player();if(p){p.game=S;p.updatedAt=Date.now()}writeLocal();if(CLOUD.user)cloudQueue()};
 loadPlayer();
 const $=id=>document.getElementById(id);
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -1592,7 +1601,9 @@ function openPicker(){
       <button class="pdel" data-del="${p.id}" aria-label="Remove ${esc(p.name)}">Remove</button></div>`).join("")}
       <button class="pbtn add" data-add="1"><span class="pa">＋</span><b>Add a player</b><small>Each player keeps their own cabinet</small></button>
     </div>
+    ${CLOUD.on&&!CLOUD.user?`<button class="ghost" id="pick-signin">☁️ Already have an account? Sign in with Google</button>`:""}
     ${player()?`<button class="ghost" data-close="1">Back to the game</button>`:""}`);
+  const sb=$("pick-signin");if(sb)sb.onclick=cloudSignIn;
 }
 function openAdd(){
   let av=AVATARS[DB.players.length%AVATARS.length],gd="f";
@@ -1666,7 +1677,7 @@ $("panel").addEventListener("click",e=>{
   if(e.target.closest("[data-add]")){openAdd();return}
   const d=e.target.closest("[data-del]");
   if(d)armButton(d,"Remove",()=>{
-    DB.players=DB.players.filter(x=>x.id!==d.dataset.del);
+    DB.players=DB.players.filter(x=>x.id!==d.dataset.del);DB.deleted=(DB.deleted||[]).concat(d.dataset.del);
     if(DB.current===d.dataset.del){DB.current=null;S=fresh()}
     save();render();openPicker();
   });
@@ -1708,6 +1719,7 @@ function openManager(){
 }
 $("manage").onclick=()=>{if(player())openGate(openManager);else openPicker()};
 $("who").onclick=openPicker;
+$("cloud").onclick=openCloud;
 $("progress").onclick=()=>{if(player())openGate(openProgress);else openPicker()};
 $("edit-rewards").onclick=()=>{if(player())openGate(openEditor);else openPicker()};
 
@@ -1716,6 +1728,108 @@ window.addEventListener("storage",e=>{
   if(e.key!==KEY||!e.newValue)return;
   try{DB=JSON.parse(e.newValue);loadPlayer();render();if(Q)renderEgg()}catch(err){}
 });
+/* =========================================================
+   Cloud sync with Google sign-in (Firebase). Runs only on the
+   hosted site, where the Firebase scripts load; elsewhere the
+   game keeps saving on the device as before.
+   ========================================================= */
+const FB_CONFIG={apiKey:"AIzaSyDSdUrL2P9ts-YrIAj8895DNlof74P58nY",authDomain:"study-time-d153f.firebaseapp.com",projectId:"study-time-d153f",
+  storageBucket:"study-time-d153f.firebasestorage.app",messagingSenderId:"115324607381",appId:"1:115324607381:web:8130ba48fe2710abbfb49c"};
+const DEVICE=(()=>{try{let d=localStorage.getItem("cc-device");if(!d){d=Math.random().toString(36).slice(2,10);localStorage.setItem("cc-device",d)}return d}catch(e){return "device"}})();
+function cloudInit(){
+  if(!window.firebase||!firebase.initializeApp||!firebase.auth||!firebase.firestore)return;
+  try{if(!firebase.apps||!firebase.apps.length)firebase.initializeApp(FB_CONFIG)}catch(e){return}
+  CLOUD.on=true;renderCloud();
+  firebase.auth().onAuthStateChanged(u=>{CLOUD.user=u||null;if(u)cloudStart(u);else cloudStop();renderCloud()});
+  window.addEventListener("online",()=>{if(CLOUD.user)cloudQueue()});
+  window.addEventListener("offline",()=>setStatus("Offline · saved on this device"));
+  // send any waiting save straight away when the app is closed or put in the background
+  const flush=()=>{if(CLOUD.ref&&CLOUD.status==="Saving…")cloudPush()};
+  document.addEventListener("visibilitychange",()=>{if(document.hidden)flush()});
+  window.addEventListener("pagehide",flush);
+}
+async function cloudSignIn(){
+  try{await firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())}
+  catch(e){
+    const c=e&&e.code||"";
+    const msg=c==="auth/popup-blocked"?"The browser blocked the Google sign-in window. Allow pop-ups for this site, then try again."
+      :c==="auth/unauthorized-domain"?"This web address isn't on Firebase's Authorized domains list yet."
+      :c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request"?""
+      :c==="auth/network-request-failed"?"No internet connection. Try again when you're online."
+      :"Google sign-in didn't work here. If you opened the link inside WhatsApp or another app, open it in Chrome or Safari instead.";
+    if(msg)cloudNote(msg);
+  }
+}
+function cloudStart(u){
+  cloudStop(true);
+  CLOUD.ref=firebase.firestore().collection("families").doc(u.uid);CLOUD.first=false;
+  setStatus("Syncing…");
+  CLOUD.unsub=CLOUD.ref.onSnapshot(snap=>{
+    if(snap.metadata&&snap.metadata.hasPendingWrites)return;
+    const d=snap.exists?snap.data():null;let remote=null;
+    if(d&&d.data){try{remote=JSON.parse(d.data)}catch(e){}}
+    if(!remote){if(!CLOUD.first){CLOUD.first=true;cloudPush()}return}   // first sign-in: move this device's progress into the account
+    if(d.device===DEVICE&&CLOUD.first){setStatus("Synced");return}       // our own write coming back
+    const {localNewer}=mergeRemote(remote);
+    const was=CLOUD.first;CLOUD.first=true;
+    if(localNewer){was?cloudQueue():cloudPush()}else setStatus("Synced");
+  },err=>{setStatus("Sync paused");console.warn("sync",err)});
+}
+function cloudStop(keep){if(CLOUD.unsub){try{CLOUD.unsub()}catch(e){}}CLOUD.unsub=null;CLOUD.ref=null;clearTimeout(CLOUD.timer);if(!keep)setStatus("")}
+function cloudQueue(){if(!CLOUD.user||!CLOUD.ref)return;clearTimeout(CLOUD.timer);setStatus("Saving…");CLOUD.timer=setTimeout(cloudPush,2000)}
+function cloudPush(){
+  if(!CLOUD.ref)return;clearTimeout(CLOUD.timer);
+  CLOUD.ref.set({data:JSON.stringify(DB),device:DEVICE,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})
+    .then(()=>setStatus("Synced")).catch(e=>{setStatus(navigator.onLine===false?"Offline · saved on this device":"Sync problem");console.warn("sync",e)});
+}
+// combine two copies of the family's data: for each player, the most recently played copy wins
+function mergeRemote(R){
+  const dead=new Set([...(DB.deleted||[]),...(R.deleted||[])]),byId=new Map(),rp=R.players||[];
+  let localNewer=false,changed=false;
+  for(const p of DB.players)byId.set(p.id,p);
+  for(const r of rp){const l=byId.get(r.id);
+    if(!l||(r.updatedAt||0)>(l.updatedAt||0)){byId.set(r.id,r);changed=true}
+    else if((l.updatedAt||0)>(r.updatedAt||0))localNewer=true}
+  for(const l of DB.players)if(!rp.some(r=>r.id===l.id))localNewer=true;
+  if((DB.deleted||[]).some(id=>!(R.deleted||[]).includes(id)))localNewer=true;
+  const before=DB.players.length;
+  DB.players=[...byId.values()].filter(p=>!dead.has(p.id));DB.deleted=[...dead];
+  if(DB.players.length!==before)changed=true;
+  if(!player())DB.current=(R.current&&DB.players.some(p=>p.id===R.current))?R.current:(DB.players[0]||{}).id||null;
+  if(changed){
+    const p=player();S=p?Object.assign(fresh(),p.game):fresh();if(p)p.game=S;
+    writeLocal();render();
+    const pb=$("panel-body");
+    if(!$("panel").hidden&&pb.querySelector("[data-add]"))openPicker();
+    else if(!Q&&player()&&$("panel").hidden)newQuestion();
+  }
+  return {localNewer};
+}
+function setStatus(t){CLOUD.status=t;renderCloud()}
+function renderCloud(){
+  const b=$("cloud");if(!b)return;
+  b.hidden=!CLOUD.on;if(!CLOUD.on)return;
+  b.innerHTML=CLOUD.user?`☁️ <span>${esc(CLOUD.status||"Synced")}</span>`:`☁️ <span>Sign in to sync</span>`;
+  b.classList.toggle("signed",!!CLOUD.user);
+}
+function cloudNote(msg){panel(`<h3>Sign in with Google</h3><p>${esc(msg)}</p><div class="row"><button class="cta" data-close="1">OK</button></div>`)}
+function openCloud(){
+  if(!CLOUD.user){cloudSignIn();return}
+  const u=CLOUD.user;
+  panel(`<h3>☁️ Your family account</h3>
+    <p>Signed in as <b>${esc(u.email||u.displayName||"your Google account")}</b>.</p>
+    <div class="msec"><p class="mnote" style="margin:0">Players, creatures, rewards and progress save to your account and appear on any phone, tablet or computer where you sign in. Voice recordings stay on the device they were made on.</p>
+      <p class="mnote" style="margin:0">Status: <b>${esc(CLOUD.status||"Synced")}</b></p></div>
+    <div class="row"><button class="ghost" id="cloud-out">Sign out on this device</button><button class="cta" data-close="1">Done</button></div>`);
+  $("cloud-out").onclick=e=>armButton(e.target,"Sign out on this device",async()=>{
+    clearTimeout(CLOUD.timer);if(CLOUD.ref){try{await CLOUD.ref.set({data:JSON.stringify(DB),device:DEVICE,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}catch(err){}}
+    try{await firebase.auth().signOut()}catch(err){}
+    // the progress is safe in the account, so clear this device
+    DB={players:[],current:null};writeLocal();S=fresh();Q=null;render();openPicker();
+  });
+}
+
+cloudInit();
 render();newQuestion();
 if(!player())openPicker();
 </script>
