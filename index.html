@@ -307,6 +307,36 @@ h1{font-family:var(--display);font-weight:800;font-size:2.1rem;line-height:1;mar
 .pattern{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;font-size:clamp(1.8rem,7vw,2.4rem);line-height:1.2}
 .pattern.nums span{font-family:var(--display);font-weight:800;background:var(--bg);border-radius:12px;padding:2px 12px}
 .q-box{display:inline-grid;place-items:center;min-width:1.4em;border:3px dashed var(--berry);border-radius:12px;color:var(--berry);font-family:var(--display);font-weight:800}
+/* shop */
+.shop{display:grid;gap:12px}
+.price-tag{display:flex;align-items:center;justify-content:center;gap:14px}
+.price-tag b{display:block;font-family:var(--display);font-size:2.4rem;line-height:1;color:var(--berry)}
+.price-tag small{font-weight:800;color:var(--ink-soft)}
+.counter{position:relative;min-height:5.4rem;border:3px dashed var(--wood);border-radius:18px;background:var(--sun-soft);padding:26px 10px 10px}
+.ctotal{position:absolute;top:4px;left:12px;font-family:var(--display);font-weight:800;font-size:1.1rem;color:var(--wood-dark);font-variant-numeric:tabular-nums}
+.cpaid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;min-height:3rem}
+.cempty{color:var(--wood-dark);font-weight:700;font-size:.9rem;opacity:.7}
+.purse{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;touch-action:none}
+.coin{display:grid;place-items:center;width:3.4rem;height:3.4rem;border-radius:50%;font-family:var(--display);font-weight:800;font-size:1rem;color:#2B3240;border:3px solid #858C97;
+  background:radial-gradient(circle at 35% 30%,#FFFFFF,#CDD2DA 55%,#9AA1AB);box-shadow:0 3px 0 #6B7280;touch-action:none;user-select:none;-webkit-user-select:none;padding:0}
+.coin.c1{width:2.9rem;height:2.9rem;font-size:.85rem}
+.coin.c2{width:3.2rem;height:3.2rem}
+.coin.c5{width:3.6rem;height:3.6rem;clip-path:polygon(50% 0,75% 7%,93% 25%,100% 50%,93% 75%,75% 93%,50% 100%,25% 93%,7% 75%,0 50%,7% 25%,25% 7%);border-radius:0}
+.coin.c10{width:3.8rem;height:3.8rem;border-color:#9A7209;background:radial-gradient(circle at 35% 30%,#FFF6CC,#EDC23F 50%,#B8860B);box-shadow:0 3px 0 #8A6508}
+.coin.c20{width:5.4rem;height:3rem;border-radius:8px;border-color:#A8455F;background:linear-gradient(135deg,#F9C0CC,#E86A8A);color:#5A1426;box-shadow:0 3px 0 #A8455F}
+.coin.small{transform:scale(.82)}
+.coin.dragging{position:fixed;z-index:40;pointer-events:none;transform:translate(-50%,-50%) scale(1.15)}
+/* spot the difference */
+.spot{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.scene{position:relative;aspect-ratio:4/3;max-width:100%;border:3px solid var(--ink);border-radius:14px;overflow:hidden;container-type:inline-size;cursor:pointer}
+.sp-item{position:absolute;border:0;background:none;padding:0;font-size:13cqi;line-height:1;border-radius:50%;cursor:pointer}
+.sp-item.gone{width:14cqi;height:14cqi}
+.sp-item.found{outline:3px solid var(--berry);outline-offset:3px;box-shadow:0 0 0 2cqi rgba(232,71,106,.25)}
+.sp-item.gone.found{background:rgba(255,255,255,.35)}
+.sp-item.hint{animation:hintpulse 1.2s ease 2}
+@keyframes hintpulse{50%{box-shadow:0 0 0 4cqi rgba(255,200,61,.85)}}
+.miss{position:absolute;transform:translate(-50%,-50%);color:var(--berry);font-weight:800;font-size:1.3rem;pointer-events:none;animation:fade .7s forwards}
+@keyframes fade{to{opacity:0}}
 .mbig.xl{font-size:clamp(2.4rem,8vw,3.4rem)}
 .mhe.big{font-size:clamp(2.4rem,9vw,3.4rem);line-height:1.2}
 .ptrans{color:var(--ink-soft);font-weight:700;font-size:.85rem}
@@ -480,7 +510,7 @@ const HATCH=3, KEY="creature-count-v2", OLD_KEY="creature-count-v1";
 const AVATARS=["🦊","🐼","🦁","🐸","🐙","🦄","🐯","🐨","🐵","🐰","🐳","🦖"];
 const MEDALS=["🥉","🥈","🥇","👑","🏅","⭐","🎁","🍦","🎬","🍕","🎨","⚽","📚","🎮","🛝","🍫"];
 const defRewards=()=>REWARDS.map(r=>({...r}));
-const fresh=()=>({coll:"animals",level:"auto",subject:"he",heMode:"journey",streak:0,correct:0,sets:0,owned:{animals:[],dinos:[],magic:[]},rewards:defRewards(),history:[],memMode:"animals",memSize:6,vowelStage:"all",storiesDone:{},stats:{},stops:{},autoStep:1,heName:"",gender:"f",traceIdx:0,dayStreak:0,lastDay:null,daily:null,enMode:"learn",logicMode:"mix",traceEnIdx:0});
+const fresh=()=>({coll:"animals",level:"auto",subject:"he",heMode:"journey",streak:0,correct:0,sets:0,owned:{animals:[],dinos:[],magic:[]},rewards:defRewards(),history:[],memMode:"animals",memSize:6,vowelStage:"all",storiesDone:{},stats:{},stops:{},autoStep:1,heName:"",gender:"f",traceIdx:0,dayStreak:0,lastDay:null,daily:null,enMode:"learn",logicMode:"mix",traceEnIdx:0,mathMode:"quiz"});
 let DB={players:[],current:null}, S=null, Q=null, lastNew=null, learnSel=null;
 try{
   const raw=localStorage.getItem(KEY);
@@ -1033,7 +1063,7 @@ const SKILL_NAMES={"math:add":"Adding","math:sub":"Taking away","math:missing":"
   "math:tenframe":"Make 10","math:bridge":"Make 10 to add","he:sounds":"Hearing sounds","he:letters":"Letter sounds","he:write":"Writing letters","he:vowels":"Vowels",
   "he:syl":"Syllables","he:words":"Reading words","he:stories":"Story questions",
   "en:sounds":"English first sounds","en:case":"Big & small letters","en:names":"English letter names","en:words":"English words","en:write":"Writing English letters",
-  "logic:patterns":"Patterns","logic:odd":"Odd one out","logic:seq":"Number patterns","logic:size":"Biggest & smallest"};
+  "logic:patterns":"Patterns","logic:spot":"Spot the difference","math:shop":"Paying with shekels","en:rhymes":"Rhymes","logic:odd":"Odd one out","logic:seq":"Number patterns","logic:size":"Biggest & smallest"};
 function status(r,w){const n=r+w;if(!n)return ["new","Not tried"];const a=r/n;if(n>=5&&a>=.8)return ["good","Strong"];if(a<.6&&n>=3)return ["bad","Needs help"];return ["mid","Practising"]}
 function openProgress(){
   const st=ensureStats(),p=player(),days=[...Array(7)].map((_,i)=>daysAgo(6-i)),mins=days.map(d=>Math.round((st.days[d]||0)/60));
@@ -1089,7 +1119,7 @@ const EN_PICS=EN_ABC.filter(x=>!x[3]).map(x=>[x[1],x[2],x[0]]).concat([
 // three-letter words to read and build
 const EN_WORDS=[["cat","🐱"],["dog","🐶"],["sun","☀️"],["pig","🐷"],["hat","🎩"],["bus","🚌"],["bed","🛏️"],["cup","☕"],["fox","🦊"],["box","📦"],
   ["bag","👜"],["hen","🐔"],["map","🗺️"],["pen","🖊️"],["bat","🦇"],["web","🕸️"],["van","🚐"],["bug","🐛"],["ant","🐜"],["leg","🦵"]];
-const EN_MODES=[["learn","📖 ABC"],["sounds","👂 First sounds"],["case","Aa Big & small"],["names","🔤 Letter names"],["words","📝 Words"],["write","✏️ Write"],["mix","Mix it up"]];
+const EN_MODES=[["learn","📖 ABC"],["sounds","👂 First sounds"],["rhymes","🎵 Rhymes"],["case","Aa Big & small"],["names","🔤 Letter names"],["words","📝 Words"],["write","✏️ Write"],["mix","Mix it up"]];
 const lc=c=>c.toLowerCase();
 const enLetterChoices=(L,show)=>{const others=shuffle(EN_ABC.map(x=>x[0]).filter(x=>x!==L)).slice(0,3);return shuffle([L,...others]).map(x=>({k:x,html:show(x),cls:"txt en-l"}))};
 function enSoundQ(){
@@ -1139,7 +1169,7 @@ function showEnDetail(i){
 }
 
 /* ---------- logic ---------- */
-const LOGIC_MODES=[["patterns","🔁 Patterns"],["odd","🧐 Odd one out"],["seq","🔢 Number patterns"],["size","📏 Biggest & smallest"],["mix","Mix it up"]];
+const LOGIC_MODES=[["spot","🔍 Spot the difference"],["patterns","🔁 Patterns"],["odd","🧐 Odd one out"],["seq","🔢 Number patterns"],["size","📏 Biggest & smallest"],["mix","Mix it up"]];
 const SYMS=[["🔴","🔵","🟡","🟢","🟣","🟠"],["🍎","🍌","🍇","🍓","🍐"],["🐶","🐱","🐰","🐻","🐸"],["⭐","❤️","🌙","☀️","⚡"],["🔺","🟦","⚪","🔶"]];
 function patternQ(){
   const units=["AB","AB","AAB","ABB","ABC","AABB","ABCC"],u=pick(units),set=shuffle(pick(SYMS));
@@ -1176,17 +1206,147 @@ function sizeQ(){
     hint:big?"Which one would you reach last when counting?":"Which one would you reach first when counting?",good:`${ans} is the ${big?"biggest":"smallest"}.`};
 }
 
+/* =========================================================
+   Shop keeper, Spot the difference, Rhyme time
+   ========================================================= */
+/* ---------- shop ---------- */
+const SHOP_ITEMS=[["🧸","teddy bear"],["🎈","balloon"],["🪀","yo-yo"],["🪁","kite"],["⚽","ball"],["🚗","toy car"],["🦖","toy dino"],["🧃","juice"],
+  ["🍭","lollipop"],["🍦","ice cream"],["📚","books"],["🎨","paints"],["🛴","scooter"],["🧩","puzzle"],["🖍️","crayons"],["🎲","dice"],["🍪","cookie"],["🎸","guitar"]];
+function shopQ(){
+  const L=effLevel(),[lo,hi]=L===6?[1,6]:L===10?[2,10]:L===20?[5,20]:[12,50];
+  const coins=L===6?[1,2,5]:L==="x"?[1,2,5,10,20]:[1,2,5,10];
+  return {type:"shop",price:rnd(lo,hi),it:pick(SHOP_ITEMS),coins,paid:[],good:""};
+}
+const fewest=(n,coins)=>{let c=0;for(const v of [...coins].sort((a,b)=>b-a)){c+=Math.floor(n/v);n%=v}return c};
+let shopDrag=null;
+function renderShop(){
+  const {price,it,coins}=Q;
+  $("quiz").innerHTML=`${eggRow()}
+    <div class="shop">
+      <div class="price-tag"><span class="emoji-big">${it[0]}</span><div><b>₪${price}</b><small>${it[1]}</small></div></div>
+      <p class="mnote" style="text-align:center">Pay exactly <b>₪${price}</b>. Drag coins onto the counter, or tap them.</p>
+      <div class="counter" id="counter" aria-label="Counter"><span class="ctotal" id="ctotal">₪0</span><div class="cpaid" id="cpaid"></div></div>
+      <div class="purse">${coins.map(v=>`<button class="coin c${v}" data-coin="${v}" aria-label="${v} shekel${v>1?"s":""}">₪${v}</button>`).join("")}</div>
+      <div class="row" style="justify-content:center;margin-top:0"><button class="ghost" id="shop-clear">Take all back</button><button class="cta" id="shop-pay">Pay</button></div>
+    </div><div class="feedback" id="feedback" aria-live="polite"></div>`;
+  renderEgg();drawCounter();
+  const purse=$("quiz").querySelector(".purse");
+  purse.onpointerdown=e=>{const c=e.target.closest("[data-coin]");if(!c||Q.done)return;e.preventDefault();
+    const g=c.cloneNode(true);g.classList.add("dragging");document.body.appendChild(g);
+    shopDrag={v:+c.dataset.coin,g,x0:e.clientX,y0:e.clientY,moved:false};moveDrag(e)};
+  $("cpaid").onclick=e=>{const b=e.target.closest("[data-paid]");if(!b||Q.done)return;Q.paid.splice(+b.dataset.paid,1);drawCounter()};
+  $("shop-clear").onclick=()=>{if(Q.done)return;Q.paid=[];drawCounter();setFeedback("")};
+  $("shop-pay").onclick=payShop;
+}
+function moveDrag(e){if(!shopDrag)return;shopDrag.g.style.left=e.clientX+"px";shopDrag.g.style.top=e.clientY+"px";
+  if(Math.hypot(e.clientX-shopDrag.x0,e.clientY-shopDrag.y0)>8)shopDrag.moved=true}
+window.addEventListener("pointermove",moveDrag);
+window.addEventListener("pointerup",e=>{if(!shopDrag)return;const d=shopDrag;shopDrag=null;d.g.remove();
+  const c=$("counter");if(!c||!Q||Q.type!=="shop")return;const r=c.getBoundingClientRect();
+  const over=e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom;
+  if(over||!d.moved){Q.paid.push(d.v);drawCounter();setFeedback("")}});
+window.addEventListener("pointercancel",()=>{if(shopDrag){shopDrag.g.remove();shopDrag=null}});
+function drawCounter(){
+  const t=Q.paid.reduce((a,b)=>a+b,0);$("ctotal").textContent=`₪${t}`;
+  $("cpaid").innerHTML=Q.paid.length?Q.paid.map((v,i)=>`<button class="coin c${v} small" data-paid="${i}" aria-label="Take back ${v}">₪${v}</button>`).join(""):`<span class="cempty">Put coins here</span>`;
+}
+function payShop(){
+  if(Q.done)return;const t=Q.paid.reduce((a,b)=>a+b,0),p=Q.price;
+  if(!t){setFeedback("Put some coins on the counter first.","bad");return}
+  if(t<p){noteResult(false);setFeedback(`Not enough yet. You need ₪${p-t} more.`,"bad");return}
+  if(t>p){noteResult(false);setFeedback(`That's too much. Take ₪${t-p} back.`,"bad");return}
+  Q.done=true;const best=fewest(p,Q.coins);
+  Q.good=Q.paid.length===best?`Exactly ₪${p}, with the fewest coins! ⭐`:`Exactly ₪${p}! (You could do it with just ${best} coin${best>1?"s":""}.)`;
+  gotIt();
+}
+
+/* ---------- spot the difference ---------- */
+const SCENES=[
+  {name:"Farm",bg:"linear-gradient(#BDE6FF 52%,#9ED36A 52%)",items:["🌳","🐄","🐔","🐑","🏠","🌻","🐖","🚜","🐴","🌾","☀️","☁️"],alt:["🐓","🐐","🌷","🐕","🐇","🦆"]},
+  {name:"Sea",bg:"linear-gradient(#8FDCFA,#2E86C1)",items:["🐟","🐙","🐠","🐚","🦀","🐳","🐡","🦐","🦑","🐬","⛵","🌊"],alt:["🐢","🦈","🦞","🐋","🦭","🐊"]},
+  {name:"Space",bg:"linear-gradient(#1B1F4A,#3B2A6B)",items:["🚀","🪐","⭐","🌙","👽","🛸","☄️","🌍","🛰️","✨","🌟","👨‍🚀"],alt:["🌞","🌕","🔭","💫","🌎","🌠"]},
+  {name:"Park",bg:"linear-gradient(#CDEBFF 48%,#B8E08A 48%)",items:["🌳","🛝","⚽","🐕","🦆","🌷","🪁","🚲","🐿️","🍦","🎈","🌲"],alt:["🐈","🌼","🏀","🦋","🛴","🐦"]}
+];
+const SPOT_TYPES=["swap","missing","flip","big","color"];
+const SPOT_FLIP=["🐄","🐔","🐑","🐖","🚜","🐴","🐟","🐠","🐳","🐡","🦐","🦑","🐬","⛵","🚀","🛰️","☄️","🐕","🦆","🛝","🚲","🐿️","🪁"];
+const SPOT_PALE=["☁️","👨‍🚀","🛰️","🌊","✨"];
+function spotQ(){
+  const sc=pick(SCENES),items=shuffle(sc.items).slice(0,12);
+  const cells=items.map((e,i)=>({e,x:(i%4)*25+12.5+rnd(-6,6),y:Math.floor(i/4)*33.3+16.6+rnd(-7,7),s:(85+rnd(0,35))/100}));
+  const diffs=shuffle(cells.map((_,i)=>i)).slice(0,5),alts=shuffle(sc.alt),used=[];
+  diffs.forEach((ci,k)=>{
+    const e=cells[ci].e;
+    // a mirror image only shows on pictures that face one way; a colour change needs colour
+    const ok=SPOT_TYPES.filter(t=>(t!=="flip"||SPOT_FLIP.includes(e))&&(t!=="color"||!SPOT_PALE.includes(e)));
+    const fresh=ok.filter(t=>!used.includes(t)),kind=pick(fresh.length?fresh:ok);used.push(kind);
+    cells[ci].kind=kind;if(kind==="swap")cells[ci].alt=alts[k];
+  });
+  return {type:"spot",sc,cells,diffs,found:[],misses:0,done:false};
+}
+function spotItem(c,i,right){
+  let e=c.e,tf=`translate(-50%,-50%) scale(${c.s})`,f="",hide=false;
+  if(right&&c.kind==="swap")e=c.alt;
+  if(right&&c.kind==="flip")tf+=" scaleX(-1)";
+  if(right&&c.kind==="big")tf=`translate(-50%,-50%) scale(${c.s*1.55})`;
+  if(right&&c.kind==="color")f="hue-rotate(150deg) saturate(1.6)";
+  if(right&&c.kind==="missing")hide=true;
+  return `<button class="sp-item${hide?" gone":""}${Q.found.includes(i)?" found":""}" data-cell="${i}" style="left:${c.x}%;top:${c.y}%;transform:${tf};${f?`filter:${f};`:""}" aria-label="${hide?"Empty spot":"Picture"}">${hide?"":e}</button>`;
+}
+function renderSpot(){
+  const {sc,cells}=Q;
+  $("quiz").innerHTML=`<div class="egg-row"><span class="egg" id="egg" aria-hidden="true">🥚</span>
+    <div class="egg-text">Find all 5 differences to hatch an egg<span id="spot-stat"></span></div></div>
+    <div class="spot">${[0,1].map(r=>`<div class="scene" data-side="${r}" style="background:${sc.bg}">${cells.map((c,i)=>spotItem(c,i,r===1)).join("")}</div>`).join("")}</div>
+    <div class="row" style="justify-content:center;margin-top:0"><button class="ghost" id="spot-hint">💡 Hint</button><button class="ghost" id="spot-new">New picture</button></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>`;
+  spotStat();
+  $("quiz").querySelectorAll(".scene").forEach(s=>s.onclick=e=>{
+    if(Q.done)return;const b=e.target.closest(".sp-item"),i=b?+b.dataset.cell:-1;
+    if(i>=0&&Q.diffs.includes(i)){if(Q.found.includes(i))return;Q.found.push(i);
+      document.querySelectorAll(`.sp-item[data-cell="${i}"]`).forEach(x=>x.classList.add("found"));
+      setFeedback(pick(["You found one!","Great eyes!","Yes, that's different!"]),"good");spotStat();
+      if(Q.found.length===5)spotDone();return}
+    Q.misses++;setFeedback("That one is the same in both pictures. Look again!","bad");
+    const r=s.getBoundingClientRect(),m=document.createElement("span");m.className="miss";m.textContent="✕";
+    m.style.left=((e.clientX-r.left)/r.width*100)+"%";m.style.top=((e.clientY-r.top)/r.height*100)+"%";s.appendChild(m);setTimeout(()=>m.remove(),700);
+  });
+  $("spot-hint").onclick=()=>{const left=Q.diffs.filter(i=>!Q.found.includes(i));if(!left.length)return;Q.misses++;
+    document.querySelectorAll(`.sp-item[data-cell="${left[0]}"]`).forEach(x=>{x.classList.remove("hint");void x.offsetWidth;x.classList.add("hint")})};
+  $("spot-new").onclick=()=>newQuestion();
+}
+function spotStat(){$("spot-stat").innerHTML=`Found ${Q.found.length} of 5 ${"●".repeat(Q.found.length)}${"○".repeat(5-Q.found.length)}`}
+function spotDone(){
+  Q.done=true;noteResult(Q.misses<=3);S.correct++;afterCorrect();save();render();confetti();
+  const coll=S.coll,who=DB.current;
+  setTimeout(()=>modal("🔍","You found all 5!",Q.misses?`${Q.misses} extra tap${Q.misses>1?"s":""} or hints. Sharp eyes!`:"No mistakes at all. Super sharp eyes!","Hatch my egg",()=>{if(who===DB.current)hatch(coll,true)}),600);
+}
+
+/* ---------- rhyme time ---------- */
+const RHYMES=[["at",[["cat","🐱"],["hat","🎩"],["bat","🦇"],["rat","🐀"]]],["og",[["dog","🐶"],["frog","🐸"],["log","🪵"]]],["ee",[["bee","🐝"],["tree","🌳"],["three","3️⃣"],["key","🔑"]]],
+  ["ar",[["car","🚗"],["star","⭐"],["guitar","🎸"]]],["ake",[["cake","🎂"],["snake","🐍"]]],["oon",[["moon","🌙"],["spoon","🥄"],["balloon","🎈"]]],["ing",[["ring","💍"],["king","🤴"]]],
+  ["ox",[["fox","🦊"],["box","📦"],["socks","🧦"]]],["ish",[["fish","🐟"],["dish","🍽️"]]],["oat",[["goat","🐐"],["boat","⛵"],["coat","🧥"]]],["ouse",[["mouse","🐭"],["house","🏠"]]],
+  ["ock",[["clock","🕰️"],["lock","🔒"]]],["air",[["bear","🐻"],["pear","🍐"],["chair","🪑"]]],["un",[["sun","☀️"],["one","1️⃣"]]],["ain",[["train","🚂"],["rain","🌧️"],["plane","✈️"]]],
+  ["ell",[["bell","🔔"],["shell","🐚"]]],["ail",[["snail","🐌"],["whale","🐳"]]],["ug",[["bug","🐛"],["hug","🤗"]]]];
+let lastRhyme=null;
+function rhymeQ(){
+  let F;do{F=pick(RHYMES)}while(F===lastRhyme);lastRhyme=F;
+  const [T,R]=shuffle(F[1]).slice(0,2),others=shuffle(RHYMES.filter(x=>x!==F)).slice(0,3).map(x=>pick(x[1]));
+  return {prompt:`<div class="emoji-big">${T[1]}</div><p>What rhymes with <b>${T[0]}</b>?</p>${hearEnBtn("What rhymes with "+T[0]+"?")}`,
+    choices:shuffle([R,...others]).map(x=>({k:x[0],html:`<span class="e">${x[1]}</span>`,cls:"pic",swen:x[0]})),ans:R[0],
+    hint:"Say both words out loud. Do they end the same way?",good:`${T[0]} and ${R[0]} rhyme!`,speakEn:`${T[0]}, ${R[0]}!`,autoSayEn:"What rhymes with "+T[0]+"?"};
+}
+
 let turn=0;
 function newQuestion(){
   turn++;
   if(S.subject==="mem"){Q=null;newBoard();return}
-  if(S.subject==="math"){Q=mathQ();Q.skill="math:"+lastMathType}
+  if(S.subject==="math"){if(S.mathMode==="shop"){Q=shopQ();Q.skill="math:shop"}else{Q=mathQ();Q.skill="math:"+lastMathType}}
   else if(S.subject==="logic"){const m=S.logicMode==="mix"||!S.logicMode?pickWeak(["patterns","odd","seq","size"],"logic:"):S.logicMode;
-    Q={patterns:patternQ,odd:oddQ,seq:seqQ,size:sizeQ}[m]();Q.skill="logic:"+m}
+    Q={patterns:patternQ,odd:oddQ,seq:seqQ,size:sizeQ,spot:spotQ}[m]();Q.skill="logic:"+m}
   else if(S.subject==="en"){const em=S.enMode||"learn";
     if(em==="learn"){Q=null;renderLearnEn();return}
-    const m=em==="mix"?pickWeak(["sounds","case","names","words"],"en:"):em;
-    Q={sounds:enSoundQ,case:enCaseQ,names:enNameQ,words:enWordQ,write:enTraceQ}[m]();Q.skill="en:"+m}
+    const m=em==="mix"?pickWeak(["sounds","case","names","words","rhymes"],"en:"):em;
+    Q={sounds:enSoundQ,case:enCaseQ,names:enNameQ,words:enWordQ,write:enTraceQ,rhymes:rhymeQ}[m]();Q.skill="en:"+m}
   else{
     if(S.heMode==="journey"){Q=null;renderJourney();return}
     if(S.heMode==="learn"){Q=null;renderLearn();return}
@@ -1210,6 +1370,8 @@ const eggRow=()=>`<div class="egg-row"><span class="egg" id="egg" aria-hidden="t
   <div class="egg-text">Get 3 right to hatch an egg<span id="egg-sub"></span><div class="pips" id="pips"></div></div></div>`;
 function renderQuestion(){
   if(Q.type==="trace"){renderTrace();return}
+  if(Q.type==="shop"){renderShop();return}
+  if(Q.type==="spot"){renderSpot();return}
   let body;
   if(Q.type==="build"){
     const en=Q.lang==="en";
@@ -1217,7 +1379,7 @@ function renderQuestion(){
       <p style="margin:0;text-align:center;font-weight:700;color:var(--ink-soft);font-size:.9rem">${en?"Tap the letters in order. English reads left to right →":"Tap the pieces in order. Hebrew reads right to left ←"}</p>
       <div class="choices" id="choices" style="grid-template-columns:repeat(${Q.tiles.length>4?3:2},1fr);direction:${en?"ltr":"rtl"}">${Q.tiles.map((t,i)=>`<button class="choice ${en?"txt en-l":"he"}" data-i="${i}">${t}</button>`).join("")}</div>`;
   }else{
-    body=`<div class="choices" id="choices">${Q.choices.map(c=>`<button class="choice ${c.cls||""}" data-k="${c.k}"${c.sw?` data-sw="${c.sw}"`:""}>${c.html}</button>`).join("")}</div>`;
+    body=`<div class="choices" id="choices">${Q.choices.map(c=>`<button class="choice ${c.cls||""}" data-k="${c.k}"${c.sw?` data-sw="${c.sw}"`:""}${c.swen?` data-swen="${c.swen}"`:""}>${c.html}</button>`).join("")}</div>`;
   }
   $("quiz").innerHTML=`${eggRow()}<div class="prompt" aria-live="polite">${Q.prompt}</div>${body}<div class="feedback" id="feedback" aria-live="polite"></div>`;
   renderEgg();
@@ -1256,7 +1418,7 @@ function renderEgg(){
 function renderModes(){
   ["math","logic","he","en","mem"].forEach(s=>$("subj-"+s).setAttribute("aria-pressed",S.subject===s));
   const lv=`Level ${[["auto",`Auto ✨${S.level==="auto"?" · "+AUTO_STEPS[S.autoStep||0].name:""}`],[10,"Starter · to 10"],[20,"Explorer · to 20"],["x","Times tables ×"]].map(([l,t])=>`<button data-level="${l}" aria-pressed="${S.level===l}">${t}</button>`).join("")}`;
-  $("modes").innerHTML=S.subject==="math"?lv
+  $("modes").innerHTML=S.subject==="math"?[["quiz","❓ Questions"],["shop","🛒 Shop"]].map(([k,l])=>`<button data-mathmode="${k}" aria-pressed="${(S.mathMode||"quiz")===k}">${l}</button>`).join("")+`<span class="msep"></span>`+lv
     :S.subject==="logic"?LOGIC_MODES.map(([k,l])=>`<button data-logicmode="${k}" aria-pressed="${(S.logicMode||"mix")===k}">${l}</button>`).join("")
     :S.subject==="en"?EN_MODES.map(([k,l])=>`<button data-enmode="${k}" aria-pressed="${(S.enMode||"learn")===k}">${l}</button>`).join("")
     :S.subject==="mem"?MEM_MODES.map(([k,l])=>`<button data-memmode="${k}" aria-pressed="${S.memMode===k}">${l}</button>`).join("")
@@ -1387,7 +1549,7 @@ $("quiz").addEventListener("click",e=>{
     return;
   }
   if(String(Q.ans)===b.dataset.k){b.classList.add("right");gotIt()}
-  else{noteResult(false);b.classList.add("wrong");b.disabled=true;setFeedback(Q.hint,"bad");if(b.dataset.sw)say(b.dataset.sw,true)}
+  else{noteResult(false);b.classList.add("wrong");b.disabled=true;setFeedback(Q.hint,"bad");if(b.dataset.sw)say(b.dataset.sw,true);if(b.dataset.swen)sayEn(b.dataset.swen)}
 });
 document.querySelectorAll(".subj").forEach(t=>t.onclick=()=>{S.subject=t.dataset.subj;save();render();newQuestion()});
 $("modes").addEventListener("click",e=>{
@@ -1396,6 +1558,7 @@ $("modes").addEventListener("click",e=>{
   if(b.dataset.memmode)S.memMode=b.dataset.memmode;
   if(b.dataset.memsize)S.memSize=+b.dataset.memsize;
   if(b.dataset.enmode)S.enMode=b.dataset.enmode;
+  if(b.dataset.mathmode)S.mathMode=b.dataset.mathmode;
   if(b.dataset.logicmode)S.logicMode=b.dataset.logicmode;
   if(b.dataset.hemode){S.heMode=b.dataset.hemode;storyQueue=[]}
   if(b.dataset.vstage)S.vowelStage=b.dataset.vstage;
