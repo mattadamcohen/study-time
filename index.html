@@ -1737,7 +1737,10 @@ const FB_CONFIG={apiKey:"AIzaSyDSdUrL2P9ts-YrIAj8895DNlof74P58nY",authDomain:"st
   storageBucket:"study-time-d153f.firebasestorage.app",messagingSenderId:"115324607381",appId:"1:115324607381:web:8130ba48fe2710abbfb49c"};
 const DEVICE=(()=>{try{let d=localStorage.getItem("cc-device");if(!d){d=Math.random().toString(36).slice(2,10);localStorage.setItem("cc-device",d)}return d}catch(e){return "device"}})();
 function cloudInit(){
-  if(!window.firebase||!firebase.initializeApp||!firebase.auth||!firebase.firestore)return;
+  if(!window.firebase||!firebase.initializeApp||!firebase.auth||!firebase.firestore){
+    // on the hosted site, say why sign-in is missing instead of hiding it
+    if(/github\.io$/.test(location.hostname)){CLOUD.broken=true;const c=$("cloud");c.hidden=false;c.innerHTML="☁️ <span>Sign in to sync</span>"}
+    return}
   try{if(!firebase.apps||!firebase.apps.length)firebase.initializeApp(FB_CONFIG)}catch(e){return}
   CLOUD.on=true;renderCloud();
   firebase.auth().onAuthStateChanged(u=>{CLOUD.user=u||null;if(u)cloudStart(u);else cloudStop();renderCloud()});
@@ -1814,6 +1817,7 @@ function renderCloud(){
 }
 function cloudNote(msg){panel(`<h3>Sign in with Google</h3><p>${esc(msg)}</p><div class="row"><button class="cta" data-close="1">OK</button></div>`)}
 function openCloud(){
+  if(CLOUD.broken){cloudNote("Google sign-in couldn't load. Check the internet connection, turn off any ad blocker for this site, then refresh the page.");return}
   if(!CLOUD.user){cloudSignIn();return}
   const u=CLOUD.user;
   panel(`<h3>☁️ Your family account</h3>
